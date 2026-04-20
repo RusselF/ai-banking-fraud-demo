@@ -2,7 +2,7 @@
 
 A modern, fast, and local-first AI Banking Fraud Detection system built with **FastAPI**. It showcases a multi-agent approach to transactional fraud detection, complete with local LLM integration (Ollama) and workflow automation (N8N).
 
-## 🚀 Features
+## Features
 
 - **3-Agent Fraud Pipeline:** 
   - *Agent 1 (Geospatial/Time):* Detects physically impossible travel times between transactions using Haversine formulas.
@@ -15,7 +15,7 @@ A modern, fast, and local-first AI Banking Fraud Detection system built with **F
 
 ---
 
-## 🛠️ Project Structure
+## Project Structure
 
 ```text
 ai-banking-fraud-demo/
@@ -37,7 +37,7 @@ ai-banking-fraud-demo/
 
 ---
 
-## 💻 How to Run
+## How to Run
 
 ### 1. Prerequisites
 - **Python 3.10+**
@@ -64,7 +64,7 @@ Head over to your favorite browser and open:
 
 ---
 
-## 📝 Demo Data & CSV Import
+## Demo Data & CSV Import
 The moment you start the app, the SQLite database gracefully supplies itself with over 10 *Dummy Customers*, 20 *Indonesian Cities*, and safely randomized realistic transaction data to simulate an active financial environment.
 
 If you'd like to test your own data:
