@@ -1,0 +1,108 @@
+# Setup MCP Server — Banking Fraud & Sales
+
+## 1. Install MCP SDK
+
+```bash
+pip install mcp
+```
+
+---
+
+## 2. Test MCP server (pastikan jalan)
+
+```bash
+cd C:\Users\Russel\ai-demo
+python mcp_server.py
+```
+
+Kalau tidak ada error, berarti server siap. Tekan Ctrl+C untuk stop.
+
+---
+
+## 3. Setup di CURSOR
+
+### Langkah:
+1. Buka Cursor
+2. Tekan `Ctrl + Shift + P` → ketik **"Open MCP Settings"**
+3. Atau buka file: `C:\Users\Russel\.cursor\mcp.json`
+4. Paste isi file `mcp-config/cursor_mcp.json` ke dalamnya
+5. Restart Cursor
+
+### Isi config (`~/.cursor/mcp.json`):
+```json
+{
+  "mcpServers": {
+    "banking-fraud": {
+      "command": "python",
+      "args": ["C:/Users/Russel/ai-demo/mcp_server.py"],
+      "env": {}
+    }
+  }
+}
+```
+
+### Cara pakai di Cursor:
+Buka chat Cursor (Ctrl+L), lalu ketik contoh:
+- *"Jalankan fraud analysis untuk customer 2"*
+- *"Tampilkan ringkasan sales 3 bulan terakhir"*
+- *"Berapa jarak Jakarta ke Surabaya dan berapa jam perjalanannya?"*
+- *"Cek transaksi mencurigakan semua nasabah"*
+
+---
+
+## 4. Setup di CLAUDE DESKTOP
+
+### Langkah:
+1. Buka file config Claude Desktop:
+   - Windows: `C:\Users\Russel\AppData\Roaming\Claude\claude_desktop_config.json`
+2. Paste isi file `mcp-config/claude_desktop_mcp.json`
+3. Restart Claude Desktop
+
+### Isi config:
+```json
+{
+  "mcpServers": {
+    "banking-fraud": {
+      "command": "python",
+      "args": ["C:/Users/Russel/ai-demo/mcp_server.py"],
+      "env": {}
+    }
+  }
+}
+```
+
+---
+
+## 5. Tools yang tersedia untuk AI
+
+| Tool | Deskripsi |
+|------|-----------|
+| `get_customers` | Daftar semua nasabah |
+| `get_transactions` | Riwayat transaksi nasabah |
+| `analyze_location_time` | Agent 1: deteksi anomali jarak & waktu |
+| `analyze_behaviour` | Agent 2: analisis pola perilaku 3 bulan |
+| `run_fraud_analysis` | Agent 1+2+3: full fraud verdict |
+| `get_sales_summary` | Ringkasan revenue, kategori, region |
+| `query_sales` | Query sales dengan filter custom |
+| `get_cities` | Daftar kota + koordinat |
+| `calculate_distance` | Hitung jarak & waktu tempuh antar kota |
+
+---
+
+## 6. Contoh prompt untuk AI
+
+```
+Analisis semua nasabah dan temukan siapa yang paling berisiko fraud.
+Berikan ranking dari yang paling berbahaya.
+```
+
+```
+Bandingkan penjualan Elektronik vs Fashion di Jakarta dalam 90 hari terakhir.
+Buat tabel perbandingan.
+```
+
+```
+Customer 5 melakukan transaksi di Bandung jam 10:00,
+lalu ada transaksi di Makassar jam 11:30.
+Apakah ini mungkin secara fisik?
+```

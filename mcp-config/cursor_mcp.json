@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "banking-fraud": {
+      "command": "python",
+      "args": ["C:/Users/Russel/ai-demo/mcp_server.py"],
+      "env": {}
+    }
+  }
+}

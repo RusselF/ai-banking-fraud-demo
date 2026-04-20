@@ -1,0 +1,141 @@
+{
+  "name": "Banking Fraud Detection — Auto Monitor",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "minutes", "minutesInterval": 5 }]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "⏰ Cek Tiap 5 Menit",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/webhook/simulate",
+        "options": {}
+      },
+      "id": "simulate-all",
+      "name": "🔍 Analisis Semua Nasabah",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true },
+          "conditions": [
+            {
+              "id": "fraud-check",
+              "leftValue": "={{ $json.fraud }}",
+              "rightValue": 0,
+              "operator": { "type": "number", "operation": "gt" }
+            }
+          ]
+        }
+      },
+      "id": "check-fraud",
+      "name": "🚨 Ada Fraud?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Format laporan fraud dari hasil analisis\nconst data = $input.first().json;\nconst fraudList = data.results.filter(r => r.verdict === 'FRAUD');\nconst warnList  = data.results.filter(r => r.verdict === 'WARNING');\n\nlet report = `🚨 FRAUD ALERT — ${new Date().toLocaleString('id-ID')}\\n`;\nreport += `━━━━━━━━━━━━━━━━━━━━━━\\n`;\nreport += `Total nasabah dicek: ${data.total}\\n`;\nreport += `🔴 FRAUD   : ${data.fraud} nasabah\\n`;\nreport += `🟡 WARNING : ${data.warning} nasabah\\n`;\nreport += `🟢 AMAN    : ${data.aman} nasabah\\n\\n`;\n\nif (fraudList.length > 0) {\n  report += `🔴 DAFTAR FRAUD:\\n`;\n  fraudList.forEach(r => {\n    report += `  • ${r.customer} (ID:${r.customer_id}) — Score: ${r.score}/100\\n`;\n    report += `    ${r.action}\\n`;\n  });\n  report += `\\n`;\n}\n\nif (warnList.length > 0) {\n  report += `🟡 DAFTAR WARNING:\\n`;\n  warnList.forEach(r => {\n    report += `  • ${r.customer} (ID:${r.customer_id}) — Score: ${r.score}/100\\n`;\n  });\n}\n\nreturn [{ json: { report, fraud_count: data.fraud, warning_count: data.warning, raw: data } }];"
+      },
+      "id": "format-report",
+      "name": "📝 Format Laporan",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Tulis log ke file\nconst fs = require('fs');\nconst data = $input.first().json;\nconst logPath = 'C:/Users/Russel/ai-demo/data/n8n_fraud_log.txt';\n\nconst line = `[${new Date().toLocaleString('id-ID')}] ` +\n  `FRAUD:${data.fraud_count} WARNING:${data.warning_count}\\n` +\n  data.report + '\\n' + '='.repeat(40) + '\\n';\n\nfs.appendFileSync(logPath, line, 'utf8');\nconsole.log('Log ditulis:', logPath);\n\nreturn [{ json: { logged: true, path: logPath, report: data.report } }];"
+      },
+      "id": "write-log",
+      "name": "💾 Tulis ke Log File",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Log status aman\nconst fs = require('fs');\nconst data = $input.first().json;\nconst logPath = 'C:/Users/Russel/ai-demo/data/n8n_fraud_log.txt';\n\nconst line = `[${new Date().toLocaleString('id-ID')}] ✅ SEMUA AMAN — ${data.total} nasabah dicek\\n`;\nfs.appendFileSync(logPath, line, 'utf8');\n\nreturn [{ json: { status: 'semua aman', total: data.total } }];"
+      },
+      "id": "log-aman",
+      "name": "✅ Log Semua Aman",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 420]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:8000/api/webhook/transaction",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "customer_id", "value": "={{ $json.customer_id }}" },
+            { "name": "amount",      "value": "={{ $json.amount }}" },
+            { "name": "city",        "value": "={{ $json.city }}" },
+            { "name": "merchant",    "value": "={{ $json.merchant }}" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "single-transaction",
+      "name": "🔍 Cek Transaksi Tunggal",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 560],
+      "notes": "Gunakan node ini kalau mau cek 1 transaksi spesifik"
+    },
+    {
+      "parameters": {
+        "path": "new-transaction",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "📡 Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 560],
+      "webhookId": "banking-fraud-webhook",
+      "notes": "Trigger manual dari sistem eksternal"
+    }
+  ],
+  "connections": {
+    "⏰ Cek Tiap 5 Menit": {
+      "main": [[{ "node": "🔍 Analisis Semua Nasabah", "type": "main", "index": 0 }]]
+    },
+    "🔍 Analisis Semua Nasabah": {
+      "main": [[{ "node": "🚨 Ada Fraud?", "type": "main", "index": 0 }]]
+    },
+    "🚨 Ada Fraud?": {
+      "main": [
+        [{ "node": "📝 Format Laporan", "type": "main", "index": 0 }],
+        [{ "node": "✅ Log Semua Aman", "type": "main", "index": 0 }]
+      ]
+    },
+    "📝 Format Laporan": {
+      "main": [[{ "node": "💾 Tulis ke Log File", "type": "main", "index": 0 }]]
+    },
+    "📡 Webhook Trigger": {
+      "main": [[{ "node": "🔍 Cek Transaksi Tunggal", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": { "templateCredsSetupCompleted": true },
+  "pinData": {}
+}

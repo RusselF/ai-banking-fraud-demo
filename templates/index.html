@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Banking Intelligence Demo</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+  <!-- App stylesheet -->
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<div class="shell">
+
+  <!-- ═══════════════════════════════════════
+       SIDEBAR
+  ═══════════════════════════════════════ -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-badge">AI Intelligence</div>
+      <h1>Banking <span>&amp;</span> Sales<br>Demo Platform</h1>
+    </div>
+
+    <nav>
+      <div class="nav-group">
+        <div class="nav-label">Analytics</div>
+
+        <div class="nav-item active" id="nav-fraud" onclick="showPage('fraud')">
+          <span class="nav-icon">🛡️</span>
+          Fraud Detection
+          <div class="status-dot"></div>
+        </div>
+
+        <div class="nav-item" id="nav-sales" onclick="showPage('sales')">
+          <span class="nav-icon">📊</span>
+          Sales Analytics
+        </div>
+
+        <div class="nav-item" id="nav-map" onclick="showPage('map')">
+          <span class="nav-icon">🗺️</span>
+          Transaction Map
+        </div>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-label">AI Assistant</div>
+
+        <div class="nav-item" id="nav-chat" onclick="showPage('chat')">
+          <span class="nav-icon">💬</span>
+          AI Chat
+        </div>
+      </div>
+      <div class="nav-group">
+        <div class="nav-label">Monitoring</div>
+        <div class="nav-item" id="nav-log" onclick="showPage('log')">
+          <span class="nav-icon">📋</span>
+          Fraud Log
+        </div>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="ollama-status">
+        <div id="ollamaIndicator"
+             style="width:8px;height:8px;border-radius:50%;background:var(--muted)">
+        </div>
+        Ollama: <span id="ollamaStatus">checking...</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════════════════════════════════════
+       MAIN CONTENT
+  ═══════════════════════════════════════ -->
+  <main class="main">
+
+    <!-- Top bar -->
+    <div class="topbar">
+      <div>
+        <div class="topbar-title" id="pageTitle">Fraud Detection — Agentic AI</div>
+        <div class="topbar-sub"   id="pageSubtitle">3 agents bekerja paralel: Lokasi · Perilaku · Kesimpulan</div>
+      </div>
+      <div id="topbarTime"
+           style="font-family:var(--mono);font-size:12px;color:var(--muted)">
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ───────────────────────────────────
+           PAGE: FRAUD DETECTION
+      ─────────────────────────────────── -->
+      <div class="page active" id="page-fraud">
+
+        <!-- Customer selector -->
+        <div class="card" style="margin-bottom:20px">
+          <div class="card-title">Pilih Nasabah untuk Analisis</div>
+          <div class="customer-selector" id="customerBtns"></div>
+          <div style="display:flex;gap:12px;align-items:center;margin-top:8px;flex-wrap:wrap">
+            <button class="analyze-btn" id="analyzeBtn" onclick="runFraudAnalysis()">
+              ⚡ Jalankan Analisis
+            </button>
+            <button class="analyze-btn csv-upload-btn" onclick="document.getElementById('csvFileInput').click()">
+              📁 Import CSV
+            </button>
+            <a href="/api/upload/template" class="csv-template-link">⬇ Download Template</a>
+            <input type="file" id="csvFileInput" accept=".csv" style="display:none" onchange="handleCsvUpload(this)">
+            <span id="analyzeInfo"
+                  style="font-size:13px;color:var(--muted);font-family:var(--mono)">
+            </span>
+          </div>
+
+          <!-- CSV Upload notification -->
+          <div id="csvNotification" class="csv-notification" style="display:none"></div>
+        </div>
+
+        <!-- Loading indicator -->
+        <div id="fraudLoading" style="display:none">
+          <div class="loading">
+            <div class="spinner"></div>
+            Agents sedang menganalisis data...
+          </div>
+        </div>
+
+        <!-- Results (hidden until analysis runs) -->
+        <div id="fraudResult" style="display:none">
+
+          <!-- Agent cards -->
+          <div class="agents-grid">
+
+            <div class="agent-card" id="agentCard1">
+              <div class="agent-header">
+                <span class="agent-name">AGENT 1</span>
+                <span class="status-badge" id="a1badge">—</span>
+              </div>
+              <div style="font-size:14px;font-weight:600;margin-bottom:8px">Lokasi &amp; Waktu</div>
+              <div class="score-bar-wrap">
+                <div class="score-label">
+                  <span>Risk Score</span>
+                  <span id="a1score">0</span>
+                </div>
+                <div class="score-bar">
+                  <div class="score-fill" id="a1bar" style="width:0%"></div>
+                </div>
+              </div>
+              <div id="a1detail" style="font-size:12px;color:var(--muted);margin-top:8px"></div>
+            </div>
+
+            <div class="agent-card" id="agentCard2">
+              <div class="agent-header">
+                <span class="agent-name">AGENT 2</span>
+                <span class="status-badge" id="a2badge">—</span>
+              </div>
+              <div style="font-size:14px;font-weight:600;margin-bottom:8px">Analisis Perilaku</div>
+              <div class="score-bar-wrap">
+                <div class="score-label">
+                  <span>Risk Score</span>
+                  <span id="a2score">0</span>
+                </div>
+                <div class="score-bar">
+                  <div class="score-fill" id="a2bar" style="width:0%"></div>
+                </div>
+              </div>
+              <div id="a2detail" style="font-size:12px;color:var(--muted);margin-top:8px"></div>
+            </div>
+
+            <div class="agent-card" id="agentCard3">
+              <div class="agent-header">
+                <span class="agent-name">AGENT 3</span>
+                <span class="status-badge" id="a3badge">—</span>
+              </div>
+              <div style="font-size:14px;font-weight:600;margin-bottom:8px">Kesimpulan Final</div>
+              <div class="score-bar-wrap">
+                <div class="score-label">
+                  <span>Combined Score</span>
+                  <span id="a3score">0</span>
+                </div>
+                <div class="score-bar">
+                  <div class="score-fill" id="a3bar" style="width:0%"></div>
+                </div>
+              </div>
+              <div id="a3detail" style="font-size:12px;color:var(--muted);margin-top:8px"></div>
+            </div>
+
+          </div><!-- /agents-grid -->
+
+          <!-- Final verdict banner -->
+          <div class="verdict-card" id="verdictCard">
+            <div class="verdict-action" id="verdictAction"></div>
+            <div class="verdict-rec"    id="verdictRec"></div>
+          </div>
+
+          <!-- Detail grid -->
+          <div class="grid-2" style="margin-top:24px">
+
+            <div class="card">
+              <div class="card-title">Agent 2 — Detail Perilaku</div>
+              <div id="behaviourDetails"></div>
+            </div>
+
+            <div class="card">
+              <div class="card-title">Transaksi Terbaru</div>
+              <div style="overflow-x:auto">
+                <table class="txn-table">
+                  <thead>
+                    <tr>
+                      <th>Waktu</th>
+                      <th>Merchant</th>
+                      <th>Kategori</th>
+                      <th>Kota</th>
+                      <th>Jumlah</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="txnTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+
+          </div><!-- /detail grid -->
+
+          <!-- Suspicious pairs (Agent 1) -->
+          <div class="card" id="suspiciousPairsCard" style="margin-top:20px">
+            <div class="card-title">Pasangan Transaksi Mencurigakan (Agent 1)</div>
+            <div id="suspiciousPairs"></div>
+          </div>
+
+        </div><!-- /fraudResult -->
+
+      </div><!-- /page-fraud -->
+
+      <!-- ───────────────────────────────────
+           PAGE: SALES ANALYTICS
+      ─────────────────────────────────── -->
+      <div class="page" id="page-sales">
+        <div id="salesContent">
+          <div class="loading">
+            <div class="spinner"></div>
+            Memuat data sales...
+          </div>
+        </div>
+      </div>
+
+      <!-- ───────────────────────────────────
+           PAGE: TRANSACTION MAP
+      ─────────────────────────────────── -->
+      <div class="page" id="page-map">
+
+        <div class="card" style="margin-bottom:20px">
+          <div class="card-title">Peta Transaksi Indonesia</div>
+          <div id="mapCustomerBtns"
+               style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+          </div>
+        </div>
+
+        <div class="map-canvas">
+          <canvas id="indonesiaMap"></canvas>
+        </div>
+
+        <div id="mapLegend"
+             style="margin-top:16px;display:flex;gap:16px;flex-wrap:wrap">
+        </div>
+
+      </div><!-- /page-map -->
+
+      <!-- ───────────────────────────────────
+           PAGE: AI CHAT
+      ─────────────────────────────────── -->
+      <div class="page" id="page-chat">
+
+        <!-- Mode tabs -->
+        <div class="mode-tabs">
+          <button class="mode-tab active" onclick="setChatMode('general')">💬 General</button>
+          <button class="mode-tab"        onclick="setChatMode('fraud')">🛡️ Fraud Context</button>
+          <button class="mode-tab"        onclick="setChatMode('sales')">📊 Sales Context</button>
+        </div>
+
+        <!-- Customer picker (shown only in fraud mode) -->
+        <div id="fraudCustSelect"
+             style="display:none;margin-bottom:12px;gap:10px;align-items:center">
+          <label style="font-size:13px;color:var(--muted);font-family:var(--mono)">
+            Nasabah:
+          </label>
+          <select id="chatCustSelect"
+                  style="background:var(--surface);border:1px solid var(--border);
+                         border-radius:6px;padding:6px 10px;color:var(--text);font-size:13px;">
+            <option value="1">Budi Santoso</option>
+            <option value="2">Siti Rahayu</option>
+            <option value="3">Agus Permana</option>
+            <option value="4">Dewi Lestari</option>
+            <option value="5">Rizky Pratama</option>
+            <option value="6">Rina Wulandari</option>
+            <option value="7">Hendra Wijaya</option>
+            <option value="8">Yanti Kusuma</option>
+            <option value="9">Doni Setiawan</option>
+            <option value="10">Maya Putri</option>
+          </select>
+        </div>
+
+        <!-- Chat window -->
+        <div class="chat-container">
+          <div class="chat-messages" id="chatMessages">
+            <div class="msg ai">
+              <div class="msg-avatar">🤖</div>
+              <div class="msg-bubble">
+                Halo! Saya AI Assistant untuk analisis data banking &amp; sales.
+                Tanya apa saja — saya bisa bantu analisis fraud, statistik penjualan,
+                atau penjelasan umum seputar data.
+              </div>
+            </div>
+          </div>
+
+          <div class="chat-input-row">
+            <input  class="chat-input"
+                    id="chatInput"
+                    placeholder="Ketik pertanyaan..."
+                    onkeydown="if(event.key==='Enter') sendChat()">
+            <button class="send-btn"
+                    id="sendBtn"
+                    onclick="sendChat()">
+              Kirim
+            </button>
+          </div>
+        </div>
+
+      </div><!-- /page-chat -->
+
+      <!-- PAGE: FRAUD LOG -->
+      <div class="page" id="page-log">
+        <div id="logContent">
+          <div class="loading"><div class="spinner"></div> Memuat fraud log...</div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </main>
+
+</div><!-- /shell -->
+
+<!-- App JavaScript (loaded last so DOM is ready) -->
+<script src="/static/js/main.js"></script>
+</body>
+</html>
