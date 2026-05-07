@@ -741,7 +741,7 @@ function renderFraudLog(logs) {
   const total   = logs.length;
   const fraud   = logs.filter(l => l.verdict === 'FRAUD').length;
   const warning = logs.filter(l => l.verdict === 'WARNING').length;
-  const aman    = logs.filter(l => l.verdict === 'SAFE').length;
+  const safe    = logs.filter(l => l.verdict === 'SAFE').length;
 
   // Filter state
   const activeFilter = document.getElementById('logFilter')?.value || 'ALL';
@@ -766,7 +766,7 @@ function renderFraudLog(logs) {
         <div class="stat-sub">needs verification</div>
       </div>
       <div class="stat-card" style="border-top-color:var(--green)">
-        <div class="stat-label">AMAN</div>
+        <div class="stat-label">SAFE</div>
         <div class="stat-value" style="color:var(--green)">${safe}</div>
         <div class="stat-sub">transactions normal</div>
       </div>
