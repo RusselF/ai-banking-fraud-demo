@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -83,7 +83,7 @@
     <div class="topbar">
       <div>
         <div class="topbar-title" id="pageTitle">Fraud Detection — Agentic AI</div>
-        <div class="topbar-sub"   id="pageSubtitle">3 agents bekerja paralel: Lokasi · Perilaku · Kesimpulan</div>
+        <div class="topbar-sub"   id="pageSubtitle">3 agents working in parallel: Location · Behavior · Conclusion</div>
       </div>
       <div id="topbarTime"
            style="font-family:var(--mono);font-size:12px;color:var(--muted)">
@@ -99,11 +99,11 @@
 
         <!-- Customer selector -->
         <div class="card" style="margin-bottom:20px">
-          <div class="card-title">Pilih Nasabah untuk Analisis</div>
+          <div class="card-title">Pilih Customers untuk Analisis</div>
           <div class="customer-selector" id="customerBtns"></div>
           <div style="display:flex;gap:12px;align-items:center;margin-top:8px;flex-wrap:wrap">
             <button class="analyze-btn" id="analyzeBtn" onclick="runFraudAnalysis()">
-              ⚡ Jalankan Analisis
+              ⚡ Run Analysis
             </button>
             <button class="analyze-btn csv-upload-btn" onclick="document.getElementById('csvFileInput').click()">
               📁 Import CSV
@@ -199,7 +199,7 @@
           <div class="grid-2" style="margin-top:24px">
 
             <div class="card">
-              <div class="card-title">Agent 2 — Detail Perilaku</div>
+              <div class="card-title">Agent 2 — Behavioral Details</div>
               <div id="behaviourDetails"></div>
             </div>
 
@@ -284,7 +284,7 @@
         <div id="fraudCustSelect"
              style="display:none;margin-bottom:12px;gap:10px;align-items:center">
           <label style="font-size:13px;color:var(--muted);font-family:var(--mono)">
-            Nasabah:
+            Customers:
           </label>
           <select id="chatCustSelect"
                   style="background:var(--surface);border:1px solid var(--border);
@@ -323,7 +323,7 @@
             <button class="send-btn"
                     id="sendBtn"
                     onclick="sendChat()">
-              Kirim
+              Send
             </button>
           </div>
         </div>

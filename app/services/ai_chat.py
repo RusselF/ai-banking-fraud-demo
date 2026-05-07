@@ -5,12 +5,12 @@ OLLAMA_URL = "http://localhost:11434/api/generate"
 MODEL = "llama3"
 
 def ask_ollama(prompt: str, context: str = "") -> str:
-    full_prompt = f"""Kamu adalah asisten AI untuk analisis data perbankan dan sales.
-Jawab dalam Bahasa Indonesia, singkat dan profesional.
+    full_prompt = f"""You are an AI assistant for banking and sales data analysis.
+Answer in English, keep it concise and professional.
 
-{f'Konteks data: {context}' if context else ''}
+{f'Data context: {context}' if context else ''}
 
-Pertanyaan: {prompt}
+Question: {prompt}
 """
     try:
         resp = requests.post(OLLAMA_URL, json={
@@ -19,10 +19,10 @@ Pertanyaan: {prompt}
             "stream": False
         }, timeout=30)
         if resp.status_code == 200:
-            return resp.json().get("response", "Tidak ada respons dari AI.")
-        return f"Error dari Ollama: {resp.status_code}"
+            return resp.json().get("response", "No response from AI.")
+        return f"Ollama error: {resp.status_code}"
     except requests.exceptions.ConnectionError:
-        return "⚠️ Ollama tidak berjalan. Pastikan `ollama serve` sudah dijalankan dan model llama3 sudah di-pull."
+        return "⚠️ AI Chat is disabled in the cloud deployment due to the high GPU/RAM requirements of running a local Llama 3 model."
     except Exception as e:
         return f"Error: {str(e)}"
 

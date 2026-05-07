@@ -62,47 +62,47 @@ HOME_CITIES = [1, 1, 3, 1, 3, 1, 2, 5, 1, 8]
 # Nasabah yang akan di-inject transaksi mencurigakan
 SUSPICIOUS_CUSTOMERS = [2, 5, 7]
 
-# Merchant biasa
+# Normal merchants
 MERCHANTS_NORMAL = [
-    "Indomaret", "Alfamart", "Giant", "Hypermart", "Tokopedia",
-    "Shopee", "Lazada", "Grab", "Gojek", "McDonald's",
-    "KFC", "Pizza Hut", "SPBU Pertamina", "PLN Mobile",
-    "Apotik K24", "RS Siloam",
+    "Convenience Store A", "Convenience Store B", "Giant Supermarket", "Hypermart", "E-commerce A",
+    "E-commerce B", "Lazada", "Ride Hailing A", "Ride Hailing B", "McDonald's",
+    "KFC", "Pizza Hut", "Gas Station", "Electricity Bill",
+    "Pharmacy 24", "City Hospital",
 ]
 
-# Merchant berisiko tinggi (fraud detection flag)
+# High risk merchants (fraud detection flag)
 MERCHANTS_HIGH_RISK = [
-    "Toko Elektronik Jaya", "Toko Emas Berkah",
-    "Perhiasan Mulia", "ATM Center Mall",
+    "Jaya Electronics", "Berkah Gold Shop",
+    "Mulia Jewelry", "Mall ATM Center",
 ]
 
-# Merchant travel
-MERCHANTS_TRAVEL = ["Hotel Santika", "Garuda Indonesia", "Lion Air"]
+# Travel merchants
+MERCHANTS_TRAVEL = ["Santika Hotel", "Garuda Airlines", "Lion Airlines"]
 
 # Semua merchant (gabungan)
 ALL_MERCHANTS = MERCHANTS_NORMAL + MERCHANTS_HIGH_RISK + MERCHANTS_TRAVEL
 
-# Produk untuk tabel sales
+# Products for sales table
 PRODUCTS = [
-    ("Laptop ASUS",    "Elektronik"),
-    ("HP Samsung",     "Elektronik"),
-    ("iPad",           "Elektronik"),
-    ("AC Sharp",       "Elektronik"),
-    ("Kulkas LG",      "Elektronik"),
-    ("Beras 5kg",      "Groceries"),
-    ("Minyak Goreng",  "Groceries"),
-    ("Susu Formula",   "Groceries"),
-    ("Kemeja Batik",   "Fashion"),
-    ("Sepatu Nike",    "Fashion"),
-    ("Tas Ransel",     "Fashion"),
+    ("ASUS Laptop",    "Electronics"),
+    ("Samsung Phone",  "Electronics"),
+    ("iPad",           "Electronics"),
+    ("Sharp AC",       "Electronics"),
+    ("LG Fridge",      "Electronics"),
+    ("Rice 5kg",       "Groceries"),
+    ("Cooking Oil",    "Groceries"),
+    ("Baby Formula",   "Groceries"),
+    ("Batik Shirt",    "Fashion"),
+    ("Nike Shoes",     "Fashion"),
+    ("Backpack",       "Fashion"),
 ]
 
 SALES_REGIONS = ["Jakarta", "Surabaya", "Bandung", "Medan", "Semarang"]
 
 PRICE_RANGES = {
-    "Elektronik": (500_000, 15_000_000),
-    "Groceries":  (20_000,  200_000),
-    "Fashion":    (100_000, 2_000_000),
+    "Electronics": (500_000, 15_000_000),
+    "Groceries":   (20_000,  200_000),
+    "Fashion":     (100_000, 2_000_000),
 }
 
 

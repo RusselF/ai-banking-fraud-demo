@@ -24,7 +24,7 @@ A fully local, automated banking fraud detection system powered by a 3-agent AI 
 **Key Capabilities:**
 - Detects geospatially impossible transactions (e.g. Jakarta → Surabaya in 33 minutes)
 - Analyses 90-day behavioural patterns per customer
-- Generates weighted fraud verdicts: AMAN / WARNING / FRAUD
+- Generates weighted fraud verdicts: SAFE / WARNING / FRAUD
 - Natural language database queries via Claude Desktop (MCP)
 - Automated monitoring every 5 minutes via N8N
 - Full web dashboard with charts and transaction maps
@@ -79,7 +79,7 @@ A fully local, automated banking fraud detection system powered by a 3-agent AI 
 │  N8N (port 5678) — Schedule Trigger every 5 minutes        │
 │  → POST /api/webhook/simulate                               │
 │  → IF fraud detected → Format report → Log to JSON         │
-│  → IF all clear → Log status aman                           │
+│  → IF all clear → Log status SAFE                           │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -257,7 +257,7 @@ Combined Score = (Agent1 Score × 0.6) + (Agent2 Score × 0.4)
 
 FRAUD   : Combined Score ≥ 65
 WARNING : Combined Score ≥ 35
-AMAN    : Combined Score < 35
+SAFE    : Combined Score < 35
 ```
 
 ---
@@ -307,12 +307,12 @@ Schedule Trigger (every 5 min)
         ↓
 HTTP POST → /api/webhook/simulate
         ↓
-Response: { total, fraud, warning, aman, results[] }
+Response: { total, fraud, warning, SAFE, results[] }
         ↓
 IF json.fraud > 0
         ↓
   TRUE  → Format fraud report → Log to fraud_log.json
-  FALSE → Log "semua aman" status
+  FALSE → Log "semua SAFE" status
 ```
 
 **Log file:** `data/fraud_log.json`

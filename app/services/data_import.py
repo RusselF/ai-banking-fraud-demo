@@ -45,39 +45,39 @@ def _validate_row(row: dict, row_num: int) -> tuple[dict | None, str | None]:
     # Check required fields exist
     for col in REQUIRED_COLUMNS:
         if col not in row or not str(row[col]).strip():
-            return None, f"Baris {row_num}: Kolom '{col}' kosong atau tidak ditemukan"
+            return None, f"Row {row_num}: Column '{col}' is empty or not found"
 
     # Validate customer_id
     try:
         customer_id = int(str(row["customer_id"]).strip())
     except (ValueError, TypeError):
-        return None, f"Baris {row_num}: customer_id '{row['customer_id']}' bukan angka valid"
+        return None, f"Row {row_num}: customer_id '{row['customer_id']}' is not a valid number"
 
     if customer_id not in VALID_CUSTOMER_IDS:
-        return None, f"Baris {row_num}: customer_id {customer_id} di luar rentang 1-10"
+        return None, f"Row {row_num}: customer_id {customer_id} is out of range (must be 1-10)"
 
     # Validate amount
     try:
         amount = float(str(row["amount"]).strip().replace(",", ""))
     except (ValueError, TypeError):
-        return None, f"Baris {row_num}: amount '{row['amount']}' bukan angka valid"
+        return None, f"Row {row_num}: amount '{row['amount']}' is not a valid number"
 
     if amount <= 0:
-        return None, f"Baris {row_num}: amount harus lebih dari 0 (ditemukan: {amount})"
+        return None, f"Row {row_num}: amount must be greater than 0 (found: {amount})"
 
     # Validate city_id
     try:
         city_id = int(str(row["city_id"]).strip())
     except (ValueError, TypeError):
-        return None, f"Baris {row_num}: city_id '{row['city_id']}' bukan angka valid"
+        return None, f"Row {row_num}: city_id '{row['city_id']}' is not a valid number"
 
     if city_id not in VALID_CITY_IDS:
-        return None, f"Baris {row_num}: city_id {city_id} di luar rentang 1-20"
+        return None, f"Row {row_num}: city_id {city_id} is out of range (must be 1-20)"
 
     # Validate merchant
     merchant = str(row["merchant"]).strip()
     if len(merchant) < 2:
-        return None, f"Baris {row_num}: merchant terlalu pendek (min 2 karakter)"
+        return None, f"Row {row_num}: merchant name too short (min 2 characters)"
 
     # Validate timestamp
     timestamp_str = str(row["timestamp"]).strip()
@@ -95,8 +95,8 @@ def _validate_row(row: dict, row_num: int) -> tuple[dict | None, str | None]:
                 timestamp_str = dt.strftime("%Y-%m-%d %H:%M:%S")
             except ValueError:
                 return None, (
-                    f"Baris {row_num}: timestamp '{timestamp_str}' format tidak valid. "
-                    f"Gunakan: YYYY-MM-DD HH:MM:SS"
+                    f"Row {row_num}: timestamp '{timestamp_str}' invalid format. "
+                    f"Use: YYYY-MM-DD HH:MM:SS"
                 )
 
     return {
@@ -148,7 +148,7 @@ def import_transactions_from_csv(file_content: str) -> dict:
                 "success_count":      0,
                 "failed_count":       0,
                 "total_rows":         0,
-                "errors":             [f"Kolom wajib tidak ditemukan: {', '.join(missing)}"],
+                "errors":             [f"Required columns missing: {', '.join(missing)}"],
                 "customers_affected": [],
             }
 
@@ -192,8 +192,8 @@ def generate_csv_template() -> str:
     """Generate a CSV template string with example data for download."""
     lines = [
         "customer_id,amount,city_id,merchant,timestamp",
-        "1,500000,1,Indomaret,2024-01-15 10:30:00",
-        "2,1500000,1,Toko Emas Berkah,2024-01-15 14:00:00",
-        "3,250000,3,Alfamart,2024-01-16 09:15:00",
+        "1,500000,1,Convenience Store A,2024-01-15 10:30:00",
+        "2,1500000,1,Berkah Gold Shop,2024-01-15 14:00:00",
+        "3,250000,3,Convenience Store B,2024-01-16 09:15:00",
     ]
     return "\n".join(lines) + "\n"

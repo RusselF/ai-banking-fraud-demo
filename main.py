@@ -56,7 +56,7 @@ async def index():
 @app.get("/api/fraud/{customer_id}")
 async def fraud_analysis(customer_id: int):
     if customer_id < 1 or customer_id > 10:
-        raise HTTPException(status_code=404, detail="Customer tidak ditemukan")
+        raise HTTPException(status_code=404, detail="Customer not found")
     return run_fraud_analysis(customer_id)
 
 
@@ -85,7 +85,7 @@ async def sales_summary():
 async def upload_transactions(file: UploadFile = File(...)):
     """Upload a CSV file to import transactions into the database."""
     if not file.filename.endswith(".csv"):
-        raise HTTPException(status_code=400, detail="File harus berformat .csv")
+        raise HTTPException(status_code=400, detail="File must be in .csv format")
 
     content = await file.read()
 
@@ -239,7 +239,7 @@ async def simulate_transactions():
         "total":   len(results),
         "fraud":   sum(1 for r in results if r["verdict"] == "FRAUD"),
         "warning": sum(1 for r in results if r["verdict"] == "WARNING"),
-        "aman":    sum(1 for r in results if r["verdict"] == "AMAN"),
+        "safe":    sum(1 for r in results if r["verdict"] == "SAFE"),
         "results": results,
     }
 

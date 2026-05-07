@@ -68,19 +68,19 @@ MERCHANT_RISK_CATEGORIES = {
     "electronics": {
         "keywords":   ["elektronik", "hp ", "samsung", "laptop", "komputer", "ipad", "apple"],
         "risk_bonus": 15,
-        "label":      "Elektronik (High Risk)",
+        "label":      "Electronics (High Risk)",
         "level":      "high",
     },
     "jewelry": {
         "keywords":   ["emas", "perhiasan", "jewelry", "berlian", "mulia"],
         "risk_bonus": 15,
-        "label":      "Perhiasan (High Risk)",
+        "label":      "Jewelry (High Risk)",
         "level":      "high",
     },
     "cash_withdrawal": {
         "keywords":   ["atm", "transfer", "tarik tunai", "setor tunai"],
         "risk_bonus": 10,
-        "label":      "Penarikan Tunai",
+        "label":      "Cash Withdrawal",
         "level":      "medium",
     },
     "travel": {
@@ -153,14 +153,14 @@ def _score_to_status(score: float) -> str:
         return "FRAUD"
     if score >= WARNING_SCORE_THRESHOLD:
         return "WARNING"
-    return "AMAN"
+    return "SAFE"
 
 
 def _empty_agent1_result(reason: str) -> dict:
     """Return a safe default result when Agent 1 has no data to analyse."""
     return {
         "agent":   "Agent 1 — Geospatial & Time Analysis",
-        "status":  "AMAN",
+        "status":  "SAFE",
         "score":   0,
         "details": [],
         "summary": {},
@@ -209,7 +209,7 @@ def agent_1_location_time(customer_id: int) -> dict:
     conn.close()
 
     if df.empty:
-        return _empty_agent1_result("Data transaksi tidak ditemukan")
+        return _empty_agent1_result("Transaction data not found")
 
     # Step 2: Flag consecutive pairs & high-value
     df["customer_lag"] = np.where(df["customer_id"] == df["prev_customer_id"], 1, 0)
@@ -217,7 +217,7 @@ def agent_1_location_time(customer_id: int) -> dict:
 
     df_pairs = df[df["customer_lag"] == 1].copy()
     if df_pairs.empty:
-        return _empty_agent1_result("Tidak ada pasangan transaksi yang bisa dibandingkan")
+        return _empty_agent1_result("No transaction pairs available to compare")
 
     # Step 3: Distance & time calculation (vectorized)
     df_pairs["timestamp"]      = pd.to_datetime(df_pairs["timestamp"])
@@ -363,7 +363,7 @@ def agent_2_behaviour(customer_id: int) -> dict:
     if not rows:
         return {
             "agent": "Agent 2 — Behavioural Analysis",
-            "status": "AMAN", "score": 0, "details": {},
+            "status": "SAFE", "score": 0, "details": {},
         }
 
     # Extract fields
@@ -383,28 +383,28 @@ def agent_2_behaviour(customer_id: int) -> dict:
     if latest > avg * 3:
         score += 40
         alerts.append(
-            f"Transaksi terakhir Rp {latest:,.0f} adalah {latest/avg:.1f}x di atas rata-rata"
+            f"Latest transaction of Rp {latest:,.0f} is {latest/avg:.1f}x above average"
         )
 
     # Rule 2: Frequency spike
     if len(recent_week) > avg_weekly * 2.5:
         score += 30
         alerts.append(
-            f"Frekuensi minggu ini ({len(recent_week)}x) jauh di atas "
-            f"rata-rata ({avg_weekly:.1f}x/minggu)"
+            f"Frequency this week ({len(recent_week)}x) is well above "
+            f"the average ({avg_weekly:.1f}x/week)"
         )
 
     # Rule 3: Geographic dispersal
     if len(cities) > 5:
         score += 20
-        alerts.append(f"Transaksi terjadi di {len(cities)} kota berbeda dalam 90 hari")
+        alerts.append(f"Transactions occurred in {len(cities)} different cities over 90 days")
 
     # Rule 4: High-value count
     high_value_count = sum(1 for a in amounts if a > HIGH_VALUE_THRESHOLD)
     if high_value_count > 3:
         score += 10
         alerts.append(
-            f"{high_value_count} transaksi di atas Rp {HIGH_VALUE_THRESHOLD/1e6:.0f}jt dalam 90 hari"
+            f"{high_value_count} transactions above Rp {HIGH_VALUE_THRESHOLD/1e6:.0f}M in 90 days"
         )
 
     # Rule 5: Merchant risk — count transactions at high-risk merchants
@@ -420,7 +420,7 @@ def agent_2_behaviour(customer_id: int) -> dict:
         score += 15
         breakdown_str = ", ".join(f"{k} ({v}x)" for k, v in merchant_risk_breakdown.items())
         alerts.append(
-            f"{risky_merchant_count} transaksi di merchant berisiko tinggi: {breakdown_str}"
+            f"{risky_merchant_count} transactions at high-risk merchants: {breakdown_str}"
         )
 
     # Final result
@@ -460,18 +460,18 @@ def agent_3_conclusion(customer_id: int, a1: dict, a2: dict) -> dict:
 
     verdicts = {
         "FRAUD": {
-            "action":         "🔴 STOP — Blokir kartu dan hubungi nasabah segera!",
-            "recommendation": "Pola penipuan terdeteksi. Bekukan akun dan lakukan verifikasi identitas.",
+            "action":         "🔴 STOP — Block card and contact customer immediately!",
+            "recommendation": "Fraud pattern detected. Freeze account and verify identity.",
             "color":          "red",
         },
         "WARNING": {
-            "action":         "🟡 WARNING — Kirim notifikasi verifikasi ke nasabah",
-            "recommendation": "Ada pola mencurigakan. Minta konfirmasi via SMS/email sebelum lanjutkan.",
+            "action":         "🟡 WARNING — Send verification notification to customer",
+            "recommendation": "Suspicious pattern detected. Request SMS/email confirmation before proceeding.",
             "color":          "orange",
         },
-        "AMAN": {
-            "action":         "🟢 AMAN — Transaksi dapat dilanjutkan",
-            "recommendation": "Tidak ada pola mencurigakan. Aktivitas normal.",
+        "SAFE": {
+            "action":         "🟢 SAFE — Transaction may proceed",
+            "recommendation": "No suspicious patterns detected. Normal activity.",
             "color":          "green",
         },
     }

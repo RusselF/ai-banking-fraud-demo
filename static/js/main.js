@@ -77,11 +77,11 @@ function showPage(page) {
   document.getElementById(`nav-${page}`).classList.add('active');
 
   const titles = {
-    fraud: ['Fraud Detection — Agentic AI',      '3 agents: Lokasi · Perilaku · Kesimpulan'],
-    sales: ['Sales Analytics',                    'Dashboard penjualan & statistik produk'],
-    map:   ['Transaction Map',                    'Visualisasi lokasi transaksi di Indonesia'],
+    fraud: ['Fraud Detection — Agentic AI',      '3 agents: Location · Behavior · Conclusion'],
+    sales: ['Sales Analytics',                    'Sales dashboard & product stats'],
+    map:   ['Transaction Map',                    'Visualisasi lokasi transactions di Indonesia'],
     chat:  ['AI Chat Assistant',                  'Powered by Ollama + Llama3 (local)'],
-    log:   ['Fraud Log',                          'Riwayat deteksi fraud — auto refresh 30 detik'],
+    log:   ['Fraud Log',                          'Fraud detection history — auto refresh 30s'],
   };
 
   document.getElementById('pageTitle').textContent    = titles[page][0];
@@ -93,7 +93,7 @@ function showPage(page) {
       renderSalesPage();
     } else {
       document.getElementById('salesContent').innerHTML =
-        '<div class="loading"><div class="spinner"></div> Memuat data sales...</div>';
+        '<div class="loading"><div class="spinner"></div> Loading sales data...</div>';
       loadSales().then(() => renderSalesPage());
     }
   }
@@ -122,7 +122,7 @@ async function checkOllama() {
 async function runFraudAnalysis() {
   const btn = document.getElementById('analyzeBtn');
   btn.disabled    = true;
-  btn.textContent = '⏳ Menganalisis...';
+  btn.textContent = '⏳ Analyzing...';
 
   document.getElementById('fraudResult').style.display  = 'none';
   document.getElementById('fraudLoading').style.display = 'block';
@@ -138,7 +138,7 @@ async function runFraudAnalysis() {
     document.getElementById('fraudLoading').style.display = 'none';
     document.getElementById('fraudResult').style.display  = 'block';
     document.getElementById('analyzeInfo').textContent    =
-      `Analisis selesai untuk Customer #${selectedCustomer}`;
+      `Analysis complete for Customer #${selectedCustomer}`;
   } catch (e) {
     document.getElementById('fraudLoading').innerHTML =
       `<div style="padding:20px;color:var(--red)">Error: ${e.message}</div>`;
@@ -157,7 +157,7 @@ function renderFraudResult(data, txns) {
   // ── Agent cards ──
   setAgentCard('1', a1.status, a1.score, a1.reason);
   setAgentCard('2', a2.status, a2.score,
-    `${d.total_transactions} transaksi | avg Rp${fmt(d.average_amount)}`);
+    `${d.total_transactions} transactions | avg Rp${fmt(d.average_amount)}`);
   setAgentCard('3', a3.final_status, a3.combined_score,
     `Combined: ${a3.combined_score}/100`);
 
@@ -170,33 +170,33 @@ function renderFraudResult(data, txns) {
   // ── Behaviour detail list ──
   document.getElementById('behaviourDetails').innerHTML = `
     <div class="detail-row">
-      <span class="detail-key">Total Transaksi (3 bln)</span>
+      <span class="detail-key">Total Transactions (3 mo)</span>
       <span class="detail-val">${d.total_transactions}x</span>
     </div>
     <div class="detail-row">
-      <span class="detail-key">Rata-rata</span>
+      <span class="detail-key">Average</span>
       <span class="detail-val">Rp ${fmt(d.average_amount)}</span>
     </div>
     <div class="detail-row">
-      <span class="detail-key">Tertinggi</span>
+      <span class="detail-key">Highest</span>
       <span class="detail-val">Rp ${fmt(d.max_amount)}</span>
     </div>
     <div class="detail-row">
-      <span class="detail-key">Terendah</span>
+      <span class="detail-key">Lowest</span>
       <span class="detail-val">Rp ${fmt(d.min_amount)}</span>
     </div>
     <div class="detail-row">
-      <span class="detail-key">Kota unik</span>
-      <span class="detail-val">${d.unique_cities} kota</span>
+      <span class="detail-key">Unique cities</span>
+      <span class="detail-val">${d.unique_cities} cities</span>
     </div>
     <div class="detail-row">
-      <span class="detail-key">Pekan ini</span>
-      <span class="detail-val">${d.recent_week_count}x transaksi</span>
+      <span class="detail-key">This week</span>
+      <span class="detail-val">${d.recent_week_count}x transactions</span>
     </div>
     <div class="detail-row">
-      <span class="detail-key">Merchant Berisiko</span>
+      <span class="detail-key">High-Risk Merchants</span>
       <span class="detail-val" style="color: ${d.risky_merchant_count > 0 ? 'var(--red)' : ''}">
-        ${d.risky_merchant_count} transaksi
+        ${d.risky_merchant_count} transactions
       </span>
     </div>
     ${(d.alerts || []).map(a => `<div class="alert-item">⚠️ ${a}</div>`).join('')}
@@ -234,27 +234,27 @@ function renderFraudResult(data, txns) {
 
   if (suspPairs.length === 0) {
     spEl.innerHTML =
-      '<div style="color:var(--green);font-size:13px;padding:12px">✓ Tidak ada pasangan transaksi mencurigakan</div>';
+      '<div style="color:var(--green);font-size:13px;padding:12px">✓ Tidak ada pasangan transactions mencurigakan</div>';
   } else {
     spEl.innerHTML = suspPairs.map(p => `
       <div style="background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:14px;margin-bottom:10px">
         <div style="display:flex;gap:24px;flex-wrap:wrap;font-size:13px">
           <div>
-            <span style="color:var(--muted);font-family:var(--mono);font-size:11px">DARI</span><br>
+            <span style="color:var(--muted);font-family:var(--mono);font-size:11px">FROM</span><br>
             <strong>${p.txn_previous.city}</strong> — ${p.txn_previous.time.slice(0, 16)}<br>
             <span style="color:var(--muted)">Rp ${fmt(p.txn_previous.amount)}</span>
           </div>
           <div style="display:flex;align-items:center;color:var(--red)">→</div>
           <div>
-            <span style="color:var(--muted);font-family:var(--mono);font-size:11px">KE</span><br>
+            <span style="color:var(--muted);font-family:var(--mono);font-size:11px">TO</span><br>
             <strong>${p.txn_current.city}</strong> — ${p.txn_current.time.slice(0, 16)}<br>
             <span style="color:var(--muted)">Rp ${fmt(p.txn_current.amount)}</span>
             ${p.txn_current.merchant_risk_label ? `<div style="margin-top:4px"><span class="flag-pill merchant-risk-${p.txn_current.merchant_risk_level}">${p.txn_current.merchant_risk_label}</span></div>` : ''}
           </div>
           <div style="margin-left:auto;text-align:right">
             <div style="color:var(--red);font-weight:700;font-family:var(--mono)">${p.distance_km} km</div>
-            <div style="font-size:12px;color:var(--muted)">Jeda: ${p.time_diff_hours}h</div>
-            <div style="font-size:12px;color:var(--muted)">Min perjalanan: ${p.min_travel_hours}h</div>
+            <div style="font-size:12px;color:var(--muted)">Delay: ${p.time_diff_hours}h</div>
+            <div style="font-size:12px;color:var(--muted)">Min travel time: ${p.min_travel_hours}h</div>
           </div>
         </div>
       </div>
@@ -264,8 +264,8 @@ function renderFraudResult(data, txns) {
 
 function setAgentCard(num, status, score, detail) {
   const s       = status.toLowerCase();
-  const badgeCls = s === 'fraud' ? 'badge-fraud' : s === 'warning' ? 'badge-warning' : 'badge-aman';
-  const fillCls  = s === 'fraud' ? 'fill-fraud'  : s === 'warning' ? 'fill-warning'  : 'fill-aman';
+  const badgeCls = s === 'fraud' ? 'badge-fraud' : s === 'warning' ? 'badge-warning' : 'badge-safe';
+  const fillCls  = s === 'fraud' ? 'fill-fraud'  : s === 'warning' ? 'fill-warning'  : 'fill-safe';
 
   document.getElementById(`a${num}badge`).textContent = status;
   document.getElementById(`a${num}badge`).className   = `status-badge ${badgeCls}`;
@@ -293,20 +293,20 @@ function renderSalesPage() {
       <div class="stat-card">
         <div class="stat-label">Total Revenue</div>
         <div class="stat-value" style="font-size:20px">Rp ${fmtBig(s.total_revenue)}</div>
-        <div class="stat-sub">6 bulan terakhir</div>
+        <div class="stat-sub">last 6 months</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Total Transaksi</div>
+        <div class="stat-label">Total Transactions</div>
         <div class="stat-value">${s.total_transactions}</div>
-        <div class="stat-sub">pesanan</div>
+        <div class="stat-sub">orders</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Avg Transaksi</div>
+        <div class="stat-label">Avg Transactions</div>
         <div class="stat-value" style="font-size:20px">Rp ${fmtBig(s.avg_transaction)}</div>
         <div class="stat-sub">per order</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Top Kategori</div>
+        <div class="stat-label">Top Category</div>
         <div class="stat-value" style="font-size:18px">${s.by_category[0]?.category || '—'}</div>
         <div class="stat-sub">Rp ${fmtBig(s.by_category[0]?.revenue || 0)}</div>
       </div>
@@ -314,11 +314,11 @@ function renderSalesPage() {
 
     <div class="grid-2" style="margin-bottom:20px">
       <div class="card">
-        <div class="card-title">Tren Revenue Bulanan</div>
+        <div class="card-title">Monthly Revenue Trend</div>
         <div class="chart-wrap"><canvas id="monthlyChart"></canvas></div>
       </div>
       <div class="card">
-        <div class="card-title">Revenue per Kategori</div>
+        <div class="card-title">Revenue per Category</div>
         <div class="chart-wrap"><canvas id="catChart"></canvas></div>
       </div>
     </div>
@@ -329,11 +329,11 @@ function renderSalesPage() {
         <div class="chart-wrap"><canvas id="regionChart"></canvas></div>
       </div>
       <div class="card">
-        <div class="card-title">Top 10 Produk</div>
+        <div class="card-title">Top 10 Products</div>
         <div style="overflow-y:auto;max-height:250px">
           <table class="txn-table">
             <thead>
-              <tr><th>#</th><th>Produk</th><th>Kategori</th><th>Revenue</th></tr>
+              <tr><th>#</th><th>Product</th><th>Category</th><th>Revenue</th></tr>
             </thead>
             <tbody>
               ${s.top_products.map((p, i) => `
@@ -549,18 +549,18 @@ async function loadMap(custId) {
   document.getElementById('mapLegend').innerHTML = `
     <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)">
       <div style="width:10px;height:10px;border-radius:50%;background:#00d4ff"></div>
-      Transaksi normal
+      Transactions normal
     </div>
     <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)">
       <div style="width:10px;height:10px;border-radius:50%;background:#ef4444"></div>
-      Transaksi mencurigakan
+      Transactions mencurigakan
     </div>
     <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)">
       <div style="width:20px;height:2px;background:#ef4444;border-top:1px dashed #ef4444"></div>
-      Jarak mencurigakan
+      Suspicious distance
     </div>
     <div style="color:var(--muted);font-size:12px;margin-left:auto">
-      Nasabah #${custId} | ${txns.length} transaksi
+      Customer #${custId} | ${txns.length} transactions
     </div>
   `;
 }
@@ -586,7 +586,7 @@ async function sendChat() {
   const btn         = document.getElementById('sendBtn');
   btn.disabled      = true;
   const thinkingId  = 'thinking-' + Date.now();
-  addMsg('⏳ Sedang diproses...', 'ai', thinkingId);
+  addMsg('⏳ Processing...', 'ai', thinkingId);
 
   try {
     const body = { message: msg, mode: chatMode };
@@ -647,7 +647,7 @@ async function handleCsvUpload(input) {
   input.value = '';
 
   // Show uploading state
-  showCsvNotification('⏳ Mengupload dan memvalidasi CSV...', 'partial');
+  showCsvNotification('⏳ Uploading and validating CSV...', 'partial');
 
   try {
     const formData = new FormData();
@@ -660,7 +660,7 @@ async function handleCsvUpload(input) {
 
     if (!response.ok) {
       const err = await response.json();
-      showCsvNotification(`❌ Upload gagal: ${err.detail || 'Unknown error'}`, 'error');
+      showCsvNotification(`❌ Upload failed: ${err.detail || 'Unknown error'}`, 'error');
       return;
     }
 
@@ -671,7 +671,7 @@ async function handleCsvUpload(input) {
       // All failed
       const errorList = errors.slice(0, 5).join('<br>');
       showCsvNotification(
-        `❌ Gagal mengimport ${failed_count} dari ${total_rows} baris.<br>` +
+        `❌ Failed to import ${failed_count} dari ${total_rows} baris.<br>` +
         `<div style="margin-top:6px;font-size:12px;opacity:0.8">${errorList}</div>`,
         'error'
       );
@@ -679,16 +679,16 @@ async function handleCsvUpload(input) {
       // Partial success
       const errorList = errors.slice(0, 3).join('<br>');
       showCsvNotification(
-        `⚠️ ${success_count} transaksi berhasil diimport, ${failed_count} baris diabaikan.<br>` +
-        `Nasabah terdampak: ${customers_affected.map(id => '#' + id).join(', ')}<br>` +
+        `⚠️ ${success_count} transactions berhasil diimport, ${failed_count} rows ignored.<br>` +
+        `Affected customers: ${customers_affected.map(id => '#' + id).join(', ')}<br>` +
         `<div style="margin-top:6px;font-size:12px;opacity:0.8">${errorList}</div>`,
         'partial'
       );
     } else {
       // All success
       showCsvNotification(
-        `✅ Berhasil mengimport ${success_count} transaksi dari file "${file.name}".<br>` +
-        `Nasabah terdampak: ${customers_affected.map(id => '#' + id).join(', ')}`,
+        `✅ Successfully imported ${success_count} transactions from file "${file.name}".<br>` +
+        `Affected customers: ${customers_affected.map(id => '#' + id).join(', ')}`,
         'success'
       );
     }
@@ -741,7 +741,7 @@ function renderFraudLog(logs) {
   const total   = logs.length;
   const fraud   = logs.filter(l => l.verdict === 'FRAUD').length;
   const warning = logs.filter(l => l.verdict === 'WARNING').length;
-  const aman    = logs.filter(l => l.verdict === 'AMAN').length;
+  const aman    = logs.filter(l => l.verdict === 'SAFE').length;
 
   // Filter state
   const activeFilter = document.getElementById('logFilter')?.value || 'ALL';
@@ -753,22 +753,22 @@ function renderFraudLog(logs) {
       <div class="stat-card">
         <div class="stat-label">Total Checks</div>
         <div class="stat-value">${total}</div>
-        <div class="stat-sub">semua analisis</div>
+        <div class="stat-sub">all analyses</div>
       </div>
       <div class="stat-card" style="border-top-color:var(--red)">
         <div class="stat-label">FRAUD</div>
         <div class="stat-value" style="color:var(--red)">${fraud}</div>
-        <div class="stat-sub">terdeteksi</div>
+        <div class="stat-sub">detected</div>
       </div>
       <div class="stat-card" style="border-top-color:var(--yellow)">
         <div class="stat-label">WARNING</div>
         <div class="stat-value" style="color:var(--yellow)">${warning}</div>
-        <div class="stat-sub">perlu verifikasi</div>
+        <div class="stat-sub">needs verification</div>
       </div>
       <div class="stat-card" style="border-top-color:var(--green)">
         <div class="stat-label">AMAN</div>
-        <div class="stat-value" style="color:var(--green)">${aman}</div>
-        <div class="stat-sub">transaksi normal</div>
+        <div class="stat-value" style="color:var(--green)">${safe}</div>
+        <div class="stat-sub">transactions normal</div>
       </div>
     </div>
 
@@ -778,17 +778,17 @@ function renderFraudLog(logs) {
         <select id="logFilter" onchange="applyLogFilter(this.value)"
           style="background:var(--surface);border:1px solid var(--border);border-radius:6px;
                  padding:6px 12px;color:var(--text);font-size:13px;cursor:pointer">
-          <option value="ALL"     ${activeFilter==='ALL'     ? 'selected':''}>Semua</option>
+          <option value="ALL"     ${activeFilter==='ALL'     ? 'selected':''}>All</option>
           <option value="FRAUD"   ${activeFilter==='FRAUD'   ? 'selected':''}>🔴 FRAUD</option>
           <option value="WARNING" ${activeFilter==='WARNING' ? 'selected':''}>🟡 WARNING</option>
-          <option value="AMAN"    ${activeFilter==='AMAN'    ? 'selected':''}>🟢 AMAN</option>
+          <option value="AMAN"    ${activeFilter==='SAFE'    ? 'selected':''}>🟢 SAFE</option>
         </select>
         <button onclick="loadFraudLog()" class="analyze-btn" style="padding:6px 16px;font-size:13px">
           🔄 Refresh
         </button>
       </div>
       <span id="logLastUpdate" style="font-size:12px;color:var(--muted);font-family:var(--mono)">
-        Auto refresh: 30 detik
+        Auto refresh: 30 seconds
       </span>
     </div>
 
@@ -798,7 +798,7 @@ function renderFraudLog(logs) {
         <table class="txn-table">
           <thead>
             <tr>
-              <th>Waktu</th>
+              <th>Time</th>
               <th>Nasabah</th>
               <th>Verdict</th>
               <th>Score</th>
@@ -810,7 +810,7 @@ function renderFraudLog(logs) {
           <tbody>
             ${filtered.length === 0
               ? `<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:32px">
-                   Belum ada log. Jalankan N8N workflow atau klik Refresh.
+                   No logs yet. Run an N8N workflow or click Refresh.
                  </td></tr>`
               : filtered.map(l => `
                 <tr>

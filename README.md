@@ -7,7 +7,7 @@ A modern, fast, and local-first AI Banking Fraud Detection system built with **F
 - **3-Agent Fraud Pipeline:** 
   - *Agent 1 (Geospatial/Time):* Detects physically impossible travel times between transactions using Haversine formulas.
   - *Agent 2 (Behavioural):* Calculates 90-day historical norms, detects velocity spikes, and monitors high-risk merchant categories (Jewelry, Electronics, etc).
-  - *Agent 3 (Aggregator):* Combines signals to produce final `AMAN`, `WARNING`, or `FRAUD` verdicts.
+  - *Agent 3 (Aggregator):* Combines signals to produce final `SAFE`, `WARNING`, or `FRAUD` verdicts.
 - **AI Chat Assistant:** Local integration with `llama3` via Ollama to natural-language query your transaction history and sales analytics.
 - **Bulk Data Import:** Upload custom transaction datasets `.csv` with intelligent validation and automated data-seeding mapping.
 - **Webhook Automation:** Endpoints specially formatted for integration with N8N to trigger automated action-flows.
