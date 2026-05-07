@@ -784,7 +784,7 @@ function renderFraudLog(logs) {
           <option value="AMAN"    ${activeFilter==='SAFE'    ? 'selected':''}>🟢 SAFE</option>
         </select>
         <button onclick="loadFraudLog()" class="analyze-btn" style="padding:6px 16px;font-size:13px">
-          🔄 Refresh
+          Refresh
         </button>
       </div>
       <span id="logLastUpdate" style="font-size:12px;color:var(--muted);font-family:var(--mono)">
@@ -799,7 +799,7 @@ function renderFraudLog(logs) {
           <thead>
             <tr>
               <th>Time</th>
-              <th>Nasabah</th>
+              <th>Customer</th>
               <th>Verdict</th>
               <th>Score</th>
               <th>Agent 1</th>
