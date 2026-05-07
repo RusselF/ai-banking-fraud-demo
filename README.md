@@ -1,3 +1,13 @@
+---
+title: Banking Fraud AI Demo
+emoji: 🛡️
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+pinned: false
+app_port: 7860
+---
+
 # Banking Fraud Detection — AI Agentic Pipeline
 
 A modern, fast, and local-first AI Banking Fraud Detection system built with **FastAPI**. It showcases a multi-agent approach to transactional fraud detection, complete with local LLM integration (Ollama) and workflow automation (N8N).
