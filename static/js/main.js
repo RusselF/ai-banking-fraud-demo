@@ -79,7 +79,7 @@ function showPage(page) {
   const titles = {
     fraud: ['Fraud Detection — Agentic AI',      '3 agents: Location · Behavior · Conclusion'],
     sales: ['Sales Analytics',                    'Sales dashboard & product stats'],
-    map:   ['Transaction Map',                    'Visualisasi lokasi transactions di Indonesia'],
+    map:   ['Transaction Map',                    'Visualization of transaction locations in Indonesia'],
     chat:  ['AI Chat Assistant',                  'Powered by Ollama + Llama3 (local)'],
     log:   ['Fraud Log',                          'Fraud detection history — auto refresh 30s'],
   };
@@ -145,7 +145,7 @@ async function runFraudAnalysis() {
   }
 
   btn.disabled    = false;
-  btn.textContent = '⚡ Jalankan Analisis';
+  btn.textContent = '⚡ Run Analysis';
 }
 
 function renderFraudResult(data, txns) {

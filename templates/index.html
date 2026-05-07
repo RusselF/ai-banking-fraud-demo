@@ -99,7 +99,7 @@
 
         <!-- Customer selector -->
         <div class="card" style="margin-bottom:20px">
-          <div class="card-title">Pilih Customers untuk Analisis</div>
+          <div class="card-title">Select Customers for Analysis</div>
           <div class="customer-selector" id="customerBtns"></div>
           <div style="display:flex;gap:12px;align-items:center;margin-top:8px;flex-wrap:wrap">
             <button class="analyze-btn" id="analyzeBtn" onclick="runFraudAnalysis()">
@@ -108,7 +108,7 @@
             <button class="analyze-btn csv-upload-btn" onclick="document.getElementById('csvFileInput').click()">
               📁 Import CSV
             </button>
-            <a href="/api/upload/template" class="csv-template-link">⬇ Download Template</a>
+
             <input type="file" id="csvFileInput" accept=".csv" style="display:none" onchange="handleCsvUpload(this)">
             <span id="analyzeInfo"
                   style="font-size:13px;color:var(--muted);font-family:var(--mono)">
@@ -123,7 +123,7 @@
         <div id="fraudLoading" style="display:none">
           <div class="loading">
             <div class="spinner"></div>
-            Agents sedang menganalisis data...
+            Agents are analyzing data...
           </div>
         </div>
 
@@ -138,7 +138,7 @@
                 <span class="agent-name">AGENT 1</span>
                 <span class="status-badge" id="a1badge">—</span>
               </div>
-              <div style="font-size:14px;font-weight:600;margin-bottom:8px">Lokasi &amp; Waktu</div>
+              <div style="font-size:14px;font-weight:600;margin-bottom:8px">Location &amp; Time</div>
               <div class="score-bar-wrap">
                 <div class="score-label">
                   <span>Risk Score</span>
@@ -156,7 +156,7 @@
                 <span class="agent-name">AGENT 2</span>
                 <span class="status-badge" id="a2badge">—</span>
               </div>
-              <div style="font-size:14px;font-weight:600;margin-bottom:8px">Analisis Perilaku</div>
+              <div style="font-size:14px;font-weight:600;margin-bottom:8px">Behavioral Analysis</div>
               <div class="score-bar-wrap">
                 <div class="score-label">
                   <span>Risk Score</span>
@@ -174,7 +174,7 @@
                 <span class="agent-name">AGENT 3</span>
                 <span class="status-badge" id="a3badge">—</span>
               </div>
-              <div style="font-size:14px;font-weight:600;margin-bottom:8px">Kesimpulan Final</div>
+              <div style="font-size:14px;font-weight:600;margin-bottom:8px">Final Conclusion</div>
               <div class="score-bar-wrap">
                 <div class="score-label">
                   <span>Combined Score</span>
@@ -204,16 +204,16 @@
             </div>
 
             <div class="card">
-              <div class="card-title">Transaksi Terbaru</div>
+              <div class="card-title">Recent Transactions</div>
               <div style="overflow-x:auto">
                 <table class="txn-table">
                   <thead>
                     <tr>
-                      <th>Waktu</th>
+                      <th>Time</th>
                       <th>Merchant</th>
-                      <th>Kategori</th>
-                      <th>Kota</th>
-                      <th>Jumlah</th>
+                      <th>Category</th>
+                      <th>City</th>
+                      <th>Amount</th>
                       <th>Status</th>
                     </tr>
                   </thead>
@@ -226,7 +226,7 @@
 
           <!-- Suspicious pairs (Agent 1) -->
           <div class="card" id="suspiciousPairsCard" style="margin-top:20px">
-            <div class="card-title">Pasangan Transaksi Mencurigakan (Agent 1)</div>
+            <div class="card-title">Suspicious Transaction Pairs (Agent 1)</div>
             <div id="suspiciousPairs"></div>
           </div>
 
@@ -241,7 +241,7 @@
         <div id="salesContent">
           <div class="loading">
             <div class="spinner"></div>
-            Memuat data sales...
+            Loading sales data...
           </div>
         </div>
       </div>
@@ -252,7 +252,7 @@
       <div class="page" id="page-map">
 
         <div class="card" style="margin-bottom:20px">
-          <div class="card-title">Peta Transaksi Indonesia</div>
+          <div class="card-title">Indonesia Transaction Map</div>
           <div id="mapCustomerBtns"
                style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
           </div>
@@ -308,9 +308,9 @@
             <div class="msg ai">
               <div class="msg-avatar">🤖</div>
               <div class="msg-bubble">
-                Halo! Saya AI Assistant untuk analisis data banking &amp; sales.
-                Tanya apa saja — saya bisa bantu analisis fraud, statistik penjualan,
-                atau penjelasan umum seputar data.
+                Hello! I am the AI Assistant for banking &amp; sales data analysis.
+                Ask me anything — I can help with fraud analysis, sales statistics,
+                or general data explanations.
               </div>
             </div>
           </div>
@@ -318,7 +318,7 @@
           <div class="chat-input-row">
             <input  class="chat-input"
                     id="chatInput"
-                    placeholder="Ketik pertanyaan..."
+                    placeholder="Type your question..."
                     onkeydown="if(event.key==='Enter') sendChat()">
             <button class="send-btn"
                     id="sendBtn"
@@ -333,7 +333,7 @@
       <!-- PAGE: FRAUD LOG -->
       <div class="page" id="page-log">
         <div id="logContent">
-          <div class="loading"><div class="spinner"></div> Memuat fraud log...</div>
+          <div class="loading"><div class="spinner"></div> Loading fraud log...</div>
         </div>
       </div>
 
